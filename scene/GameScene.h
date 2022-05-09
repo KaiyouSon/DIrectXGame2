@@ -58,7 +58,7 @@ private: // メンバ変数
 	uint32_t textureHandle = 0;
 	Model* model = nullptr;
 
-	WorldTransform worldTransforms[100];
+	WorldTransform worldTransforms[10];
 	ViewProjection viewProjection;
 
 	// デバッグカメラ
@@ -66,4 +66,22 @@ private: // メンバ変数
 
 	// カメラ上方向の角度
 	float viewAngle = 0.0f;
+
+public:
+	enum PartID {
+		Root, // 大元
+		UpperBody, // 上半身
+		Head, // 頭
+		Chest,// 胸
+		ArmL, // 左腕
+		ArmR, // 右腕
+		LowerBody, // 下半身
+		Hip,  // 尻
+		LegL, // 左足
+		LegR, // 右足
+	};
+private:
+	void CharcterInit();
+	void CharcterUpdate();
+	void CharcterDraw();
 };
