@@ -1,10 +1,15 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
+#include "AxisIndicator.h"
+#include "PrimitiveDrawer.h"
 #include <cassert>
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
+	delete model;
+	delete debugCamera;
+}
 
 void GameScene::Initialize() {
 
@@ -12,9 +17,25 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
+
+	textureHandle = TextureManager::Load("mario.jpg");
+	model = Model::Create();
+
+	worldTransform.Initialize();
+	viewProjection.Initialize();
+
+	debugCamera = new DebugCamera(WIN_WIDTH, WIN_HEIGHT);
+
+	// 軸方向表示の表示を有効にする
+	AxisIndicator::GetInstance()->SetVisible(true);
+	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera->GetViewProjection());
+
+	// ライン描画が参照参照するビュープロジェクションを指定する(アドレス渡し)
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera->GetViewProjection());
 }
 
-void GameScene::Update() {}
+void GameScene::Update() { debugCamera->Update(); }
 
 void GameScene::Draw() {
 
@@ -43,6 +64,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
+	model->Draw(worldTransform, debugCamera->GetViewProjection(), textureHandle);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -54,6 +77,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(0, 0, 0), Vector3(1, 1, 0), Vector4(255, 255, 255, 255));
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
