@@ -63,4 +63,6 @@ private: // メンバ変数
 
 	// デバッグカメラ
 	DebugCamera* debugCamera = nullptr;
+
+	void TransformInit2();
 };

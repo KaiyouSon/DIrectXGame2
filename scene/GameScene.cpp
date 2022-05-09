@@ -2,7 +2,9 @@
 #include "TextureManager.h"
 #include "AxisIndicator.h"
 #include "PrimitiveDrawer.h"
+#include "MathUtil.h"
 #include <cassert>
+#include <math.h>
 
 GameScene::GameScene() {}
 
@@ -23,6 +25,12 @@ void GameScene::Initialize() {
 
 	worldTransform.Initialize();
 	viewProjection.Initialize();
+
+	worldTransform.scale_ = { 5,5,5 };							// モデルのスケーリング
+	worldTransform.rotation_ = { Radian(45),Radian(45),0 };		// モデルの回転
+	worldTransform.translation_ = { 10,10,10 };					// モデルの平行移動
+	
+	TransformInit2();
 
 	debugCamera = new DebugCamera(WIN_WIDTH, WIN_HEIGHT);
 
@@ -78,7 +86,7 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(0, 0, 0), Vector3(1, 1, 0), Vector4(255, 255, 255, 255));
+	//PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(0, 0, 0), Vector3(1, 1, 0), Vector4(255, 255, 255, 255));
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
@@ -87,4 +95,31 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::TransformInit2()
+{
+	// スケーリング行列を宣言
+	Matrix4 matScale = MathUtility::Matrix4Scaling(
+		worldTransform.scale_.x,
+		worldTransform.scale_.y,
+		worldTransform.scale_.z);
+
+	// 回転行列を宣言
+	Matrix4 matRotZ = MathUtility::Matrix4RotationZ(worldTransform.rotation_.z);
+	Matrix4 matRotX = MathUtility::Matrix4RotationX(worldTransform.rotation_.x);
+	Matrix4 matRotY = MathUtility::Matrix4RotationY(worldTransform.rotation_.y);
+	Matrix4 matRot = matRotZ * matRotX * matRotY;
+
+	// 平行移動行列を宣言
+	Matrix4 matTrans = MathUtility::Matrix4Translation(
+		worldTransform.translation_.x,
+		worldTransform.translation_.y,
+		worldTransform.translation_.z);
+
+	// 単位行列
+	worldTransform.matWorld_ = MathUtility::Matrix4Identity();
+	worldTransform.matWorld_ *= matScale * matRot * matTrans;
+
+	worldTransform.TransferMatrix();
 }
