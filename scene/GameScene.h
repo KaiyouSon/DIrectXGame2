@@ -58,11 +58,12 @@ private: // メンバ変数
 	uint32_t textureHandle = 0;
 	Model* model = nullptr;
 
-	WorldTransform worldTransform;
+	WorldTransform worldTransforms[100];
 	ViewProjection viewProjection;
 
 	// デバッグカメラ
 	DebugCamera* debugCamera = nullptr;
 
-	void TransformInit2();
+	// カメラ上方向の角度
+	float viewAngle = 0.0f;
 };

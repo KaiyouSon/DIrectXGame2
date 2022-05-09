@@ -5,6 +5,7 @@
 #include "MathUtil.h"
 #include <cassert>
 #include <math.h>
+#include <random>
 
 GameScene::GameScene() {}
 
@@ -23,27 +24,113 @@ void GameScene::Initialize() {
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
 
-	worldTransform.Initialize();
-	viewProjection.Initialize();
+	// 乱数シート生成器
+	std::random_device seed_gen;
+	// メルセンヌ・ツイスターの乱数エンジン
+	std::mt19937_64 engine(seed_gen());
+	// 乱数範囲（回転角用）
+	std::uniform_real_distribution<float> rotDist(0, 360);
+	// 乱数範囲（座標用）
+	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
 
-	worldTransform.scale_ = { 5,5,5 };							// モデルのスケーリング
-	worldTransform.rotation_ = { Radian(45),Radian(45),0 };		// モデルの回転
-	worldTransform.translation_ = { 10,10,10 };					// モデルの平行移動
-	
-	TransformInit2();
+	// ワールドトランスフォームの初期化
+	for (size_t i = 0; i < _countof(worldTransforms); i++)
+	{
+		worldTransforms[i].Initialize();
+
+		// モデルのスケーリング
+		worldTransforms[i].scale_ = { 1,1,1 };
+		// モデルの回転
+		worldTransforms[i].rotation_ = {
+			Radian(rotDist(engine)),Radian(rotDist(engine)),Radian(rotDist(engine)) };
+		// モデルの平行移動
+		worldTransforms[i].translation_ = {
+			posDist(engine),posDist(engine),posDist(engine) };
+
+		worldTransforms[i].WorldTransformationMatrix();
+	}
+
+
+	// カメラの視点指定
+	viewProjection.eye = { 0,0,-50 };
+	viewProjection.target = { 10,0,0 };
+	viewProjection.up = { cos(Radian(45)), sin(Radian(45)), 0 };
+
+	viewProjection.Initialize();
 
 	debugCamera = new DebugCamera(WIN_WIDTH, WIN_HEIGHT);
 
 	// 軸方向表示の表示を有効にする
 	AxisIndicator::GetInstance()->SetVisible(true);
 	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
-	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera->GetViewProjection());
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&viewProjection);
 
 	// ライン描画が参照参照するビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera->GetViewProjection());
 }
 
-void GameScene::Update() { debugCamera->Update(); }
+void GameScene::Update() {
+
+	debugCamera->Update();
+
+	// 視点の移動ベクトル
+	Vector3 eyeMove = { 0,0,0 };
+	// 視点の移動速さ
+	const float viewEyeSpd = 0.2f;
+
+	// 移動処理
+	if (input_->PushKey(DIK_W)) eyeMove.z += viewEyeSpd;
+	if (input_->PushKey(DIK_S)) eyeMove.z -= viewEyeSpd;
+
+	// 視点移動
+	viewProjection.eye += eyeMove;
+
+	// 注視点の移動ベクトル
+	Vector3 targetMove = { 0,0,0 };
+	// 注視点の移動速さ
+	const float viewTargetSpd = 0.2f;
+
+	// 移動処理
+	if (input_->PushKey(DIK_LEFT)) targetMove.x -= viewTargetSpd;
+	if (input_->PushKey(DIK_RIGHT)) targetMove.x += viewTargetSpd;
+
+	// 注視点移動
+	viewProjection.target += targetMove;
+
+	const float viewUpSpd = 1;
+
+	if (input_->PushKey(DIK_SPACE))
+	{
+		viewAngle += viewUpSpd;
+		viewAngle = fmodf(viewAngle, 360);
+	}
+	viewProjection.up = { cos(Radian(viewAngle)), sin(Radian(viewAngle)), 0 };
+
+	// 行列の再計算
+	viewProjection.UpdateMatrix();
+
+	// デバッグ用表示
+	debugText_->SetPos(50, 50);
+	debugText_->Printf(
+		"eye:(%f,%f,%f)",
+		viewProjection.eye.x,
+		viewProjection.eye.y,
+		viewProjection.eye.z);
+
+	debugText_->SetPos(50, 70);
+	debugText_->Printf(
+		"target:(%f,%f,%f)",
+		viewProjection.target.x,
+		viewProjection.target.y,
+		viewProjection.target.z);
+
+	debugText_->SetPos(50, 90);
+	debugText_->Printf(
+		"target:(%f,%f,%f)",
+		viewProjection.up.x,
+		viewProjection.up.y,
+		viewProjection.up.z);
+}
 
 void GameScene::Draw() {
 
@@ -71,10 +158,11 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	for (size_t i = 0; i < _countof(worldTransforms); i++)
+		model->Draw(worldTransforms[i], viewProjection, textureHandle);
+	//model->Draw(worldTransforms[i], debugCamera->GetViewProjection(), textureHandle);
 
-	model->Draw(worldTransform, debugCamera->GetViewProjection(), textureHandle);
-
-	// 3Dオブジェクト描画後処理
+// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 
@@ -95,31 +183,4 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
-}
-
-void GameScene::TransformInit2()
-{
-	// スケーリング行列を宣言
-	Matrix4 matScale = MathUtility::Matrix4Scaling(
-		worldTransform.scale_.x,
-		worldTransform.scale_.y,
-		worldTransform.scale_.z);
-
-	// 回転行列を宣言
-	Matrix4 matRotZ = MathUtility::Matrix4RotationZ(worldTransform.rotation_.z);
-	Matrix4 matRotX = MathUtility::Matrix4RotationX(worldTransform.rotation_.x);
-	Matrix4 matRotY = MathUtility::Matrix4RotationY(worldTransform.rotation_.y);
-	Matrix4 matRot = matRotZ * matRotX * matRotY;
-
-	// 平行移動行列を宣言
-	Matrix4 matTrans = MathUtility::Matrix4Translation(
-		worldTransform.translation_.x,
-		worldTransform.translation_.y,
-		worldTransform.translation_.z);
-
-	// 単位行列
-	worldTransform.matWorld_ = MathUtility::Matrix4Identity();
-	worldTransform.matWorld_ *= matScale * matRot * matTrans;
-
-	worldTransform.TransferMatrix();
 }

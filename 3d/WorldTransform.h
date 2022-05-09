@@ -19,11 +19,11 @@ struct WorldTransform {
 	// マッピング済みアドレス
 	ConstBufferDataWorldTransform* constMap = nullptr;
 	// ローカルスケール
-	Vector3 scale_ = {1, 1, 1};
+	Vector3 scale_ = { 1, 1, 1 };
 	// X,Y,Z軸回りのローカル回転角
-	Vector3 rotation_ = {0, 0, 0};
+	Vector3 rotation_ = { 0, 0, 0 };
 	// ローカル座標
-	Vector3 translation_ = {0, 0, 0};
+	Vector3 translation_ = { 0, 0, 0 };
 	// ローカル → ワールド変換行列
 	Matrix4 matWorld_;
 	// 親となるワールド変換へのポインタ
@@ -45,4 +45,28 @@ struct WorldTransform {
 	/// 行列を転送する
 	/// </summary>
 	void TransferMatrix();
+
+	void WorldTransformationMatrix()
+	{
+		// スケーリング行列を宣言
+		Matrix4 matScale = MathUtility::Matrix4Scaling(scale_.x, scale_.y, scale_.z);
+
+		// 回転行列を宣言
+		Matrix4 matRotZ = MathUtility::Matrix4RotationZ(rotation_.z);
+		Matrix4 matRotX = MathUtility::Matrix4RotationX(rotation_.x);
+		Matrix4 matRotY = MathUtility::Matrix4RotationY(rotation_.y);
+		Matrix4 matRot = matRotZ * matRotX * matRotY;
+
+		// 平行移動行列を宣言
+		Matrix4 matTrans = MathUtility::Matrix4Translation(
+			translation_.x,
+			translation_.y,
+			translation_.z);
+
+		// 単位行列
+		matWorld_ = MathUtility::Matrix4Identity();
+		matWorld_ *= matScale * matRot * matTrans;
+
+		TransferMatrix();
+	}
 };
