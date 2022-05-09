@@ -50,11 +50,14 @@ void GameScene::Initialize() {
 		worldTransforms[i].WorldTransformationMatrix();
 	}
 
-
 	// カメラの視点指定
 	viewProjection.eye = { 0,0,-50 };
-	viewProjection.target = { 10,0,0 };
-	viewProjection.up = { cos(Radian(45)), sin(Radian(45)), 0 };
+	viewProjection.target = { 0,0,0 };
+	viewProjection.up = { 0, 1, 0 };
+	//viewProjection.fovAngleY = Radian(10);
+	//viewProjection.aspectRatio = 1.0f;
+	viewProjection.nearZ = 52.0f;
+	viewProjection.farZ = 53.0f;
 
 	viewProjection.Initialize();
 
@@ -106,6 +109,23 @@ void GameScene::Update() {
 	}
 	viewProjection.up = { cos(Radian(viewAngle)), sin(Radian(viewAngle)), 0 };
 
+	const float fovAngleSpd = 1;
+
+	//if (input_->PushKey(DIK_UP))
+	//{
+	//	viewProjection.fovAngleY -= Radian(fovAngleSpd);
+	//	viewProjection.fovAngleY = max(viewProjection.fovAngleY, 0.01f);
+	//}
+	//if (input_->PushKey(DIK_DOWN))
+	//{
+	//	viewProjection.fovAngleY += Radian(fovAngleSpd);
+	//	viewProjection.fovAngleY = min(viewProjection.fovAngleY, MathUtility::PI);
+	//}
+
+	if (input_->PushKey(DIK_UP))	viewProjection.nearZ += 0.1f;
+	if (input_->PushKey(DIK_DOWN))	viewProjection.nearZ -= 0.1f;
+
+
 	// 行列の再計算
 	viewProjection.UpdateMatrix();
 
@@ -126,10 +146,15 @@ void GameScene::Update() {
 
 	debugText_->SetPos(50, 90);
 	debugText_->Printf(
-		"target:(%f,%f,%f)",
+		"up:(%f,%f,%f)",
 		viewProjection.up.x,
 		viewProjection.up.y,
 		viewProjection.up.z);
+
+	debugText_->SetPos(50, 110);
+	debugText_->Printf(
+		"fovAngleY(Degree):%f",
+		Angle((viewProjection.fovAngleY)));
 }
 
 void GameScene::Draw() {
