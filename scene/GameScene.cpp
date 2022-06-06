@@ -121,8 +121,13 @@ void GameScene::Update() {
 	}
 
 	debugText_->SetPos(0, 0);
-	if (walkType == false)	debugText_->Printf("BioWalk");
-	if (walkType == true)	debugText_->Printf("Move of the camera viewport");
+	if (walkType == false)	debugText_->Printf("Change WalkType : Q  BioWalk");
+	if (walkType == true)	debugText_->Printf("Change WalkType : Q  Move of the camera viewport");
+
+	debugText_->SetPos(0, 20);
+	debugText_->Printf("MoveObject : WASD");
+	debugText_->SetPos(0, 40);
+	debugText_->Printf("MoveCamera : Mouse");
 
 }
 
