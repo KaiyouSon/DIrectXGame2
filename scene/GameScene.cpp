@@ -64,7 +64,7 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	model->Draw(worldTransform, debugCamera->GetViewProjection(), textureHandle);
+	//model->Draw(worldTransform, debugCamera->GetViewProjection(), textureHandle);
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -78,7 +78,16 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(0, 0, 0), Vector3(1, 1, 0), Vector4(255, 255, 255, 255));
+	for (int i = 0; i < 21; i++)
+	{
+		PrimitiveDrawer::GetInstance()->DrawLine3d(
+			Vector3(i, 0, 0), Vector3(i, 0, 20), Vector4(0, 0, 255, 255));
+	}
+	for (int i = 0; i < 21; i++)
+	{
+		PrimitiveDrawer::GetInstance()->DrawLine3d(
+			Vector3(0, 0, i), Vector3(20, 0, i), Vector4(255, 0, 0, 255));
+	}
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
