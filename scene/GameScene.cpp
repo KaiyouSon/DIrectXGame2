@@ -35,7 +35,7 @@ void GameScene::Initialize() {
 	isDebug = false;
 
 	// 軸方向表示の表示を有効にする
-	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetVisible(false);
 	// 軸方向表示が参照するビュープロジェクションを指定する(アドレス渡し)
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&view);
 
@@ -48,7 +48,6 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 
 	player->Update();
-
 
 	if (input_->TriggerKey(DIK_F5))
 	{
@@ -110,7 +109,6 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 
-	//PrimitiveDrawer::GetInstance()->DrawLine3d(Vector3(0, 0, 0), Vector3(1, 1, 0), Vector4(255, 255, 255, 255));
 
 	// デバッグテキストの描画
 	debugText_->DrawAll(commandList);
