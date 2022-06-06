@@ -106,11 +106,6 @@ void GameScene::Update() {
 		viewProjection.up.x,
 		viewProjection.up.y,
 		viewProjection.up.z);
-
-	debugText_->SetPos(50, 110);
-	debugText_->Printf(
-		"fovAngleY(Degree):%f",
-		Angle((viewProjection.fovAngleY)));
 }
 
 void GameScene::Draw() {
