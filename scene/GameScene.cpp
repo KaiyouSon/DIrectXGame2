@@ -33,32 +33,51 @@ void GameScene::Initialize() {
 	// 乱数範囲（座標用）
 	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
 
+	// X, Y, Z 軸周りの平行移動を設定
+	worldTransform.translation_ = { 0.0f, 0.0f, 0.0f };
+	// X, Y, Z 軸周りの回転角を設定
+	worldTransform.rotation_ = { 0.0f, 0.0f, 0.0f };
+	// X, Y, Z 方向のスケーリングを設定
+	worldTransform.scale_ = { 1.0f, 1.0f, 1.0f };
 	// ワールドトランスフォームの初期化
-	for (size_t i = 0; i < _countof(worldTransforms); i++)
-	{
-		worldTransforms[i].Initialize();
+	worldTransform.Initialize();
 
-		// モデルのスケーリング
-		worldTransforms[i].scale_ = { 1,1,1 };
-		// モデルの回転
-		worldTransforms[i].rotation_ = {
-			Radian(rotDist(engine)),Radian(rotDist(engine)),Radian(rotDist(engine)) };
-		// モデルの平行移動
-		worldTransforms[i].translation_ = {
-			posDist(engine),posDist(engine),posDist(engine) };
+	//// ワールドトランスフォームの初期化
+	//for (size_t i = 0; i < _countof(worldTransforms); i++)
+	//{
+	//	worldTransforms[i].Initialize();
 
-		worldTransforms[i].WorldTransformationMatrix();
+	//	// モデルのスケーリング
+	//	worldTransforms[i].scale_ = { 1,1,1 };
+	//	// モデルの回転
+	//	worldTransforms[i].rotation_ = {
+	//		Radian(rotDist(engine)),Radian(rotDist(engine)),Radian(rotDist(engine)) };
+	//	// モデルの平行移動
+	//	worldTransforms[i].translation_ = {
+	//		posDist(engine),posDist(engine),posDist(engine) };
+
+	//	worldTransforms[i].WorldTransformationMatrix();
+	//}
+
+	for (size_t i = 0; i < _countof(worldTransform2); i++) {
+
+		// ワールドトランスフォームの初期化
+		worldTransform2[i].Initialize();
+		// X, Y, Z 軸周りの平行移動を設定
+		worldTransform2[i].translation_ = { posDist(engine), posDist(engine), posDist(engine) };
+		// X, Y, Z 軸周りの回転角を設定
+		worldTransform2[i].rotation_ = {
+			Radian(rotDist(engine)), Radian(rotDist(engine)), Radian(rotDist(engine)) };
+		// X, Y, Z 方向のスケーリングを設定
+		worldTransform2[i].scale_ = { 1.0f, 1.0f, 1.0f };
+
+		worldTransform2[i].WorldTransformationMatrix();
 	}
 
 	// カメラの視点指定
-	viewProjection.eye = { 0,0,-50 };
+	viewProjection.eye = { 0,5,-10 };
 	viewProjection.target = { 0,0,0 };
 	viewProjection.up = { 0, 1, 0 };
-	//viewProjection.fovAngleY = Radian(10);
-	//viewProjection.aspectRatio = 1.0f;
-	viewProjection.nearZ = 52.0f;
-	viewProjection.farZ = 53.0f;
-
 	viewProjection.Initialize();
 
 	debugCamera = new DebugCamera(WIN_WIDTH, WIN_HEIGHT);
@@ -70,91 +89,41 @@ void GameScene::Initialize() {
 
 	// ライン描画が参照参照するビュープロジェクションを指定する(アドレス渡し)
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera->GetViewProjection());
+
+	objPos = { 0.0f, 0.0f, 0.0f };
+	objFrontVec = { 0.0f, 0.0f, 1.0f };
+	objRightVec = { 1.0f, 0.0f, 0.0f };
+	objSpeed = { 0.1f, 0.0f, 0.1f };
+	angle = 0.0f;
+
+	walkType = false;
 }
 
 void GameScene::Update() {
 
 	debugCamera->Update();
 
-	// 視点の移動ベクトル
-	Vector3 eyeMove = { 0,0,0 };
-	// 視点の移動速さ
-	const float viewEyeSpd = 0.2f;
-
-	// 移動処理
-	if (input_->PushKey(DIK_W)) eyeMove.z += viewEyeSpd;
-	if (input_->PushKey(DIK_S)) eyeMove.z -= viewEyeSpd;
-
-	// 視点移動
-	viewProjection.eye += eyeMove;
-
-	// 注視点の移動ベクトル
-	Vector3 targetMove = { 0,0,0 };
-	// 注視点の移動速さ
-	const float viewTargetSpd = 0.2f;
-
-	// 移動処理
-	if (input_->PushKey(DIK_LEFT)) targetMove.x -= viewTargetSpd;
-	if (input_->PushKey(DIK_RIGHT)) targetMove.x += viewTargetSpd;
-
-	// 注視点移動
-	viewProjection.target += targetMove;
-
-	const float viewUpSpd = 1;
-
-	if (input_->PushKey(DIK_SPACE))
+	if (input_->TriggerKey(DIK_Q))
 	{
-		viewAngle += viewUpSpd;
-		viewAngle = fmodf(viewAngle, 360);
+		if (walkType == false) walkType = true;
+		else                   walkType = false;
 	}
-	viewProjection.up = { cos(Radian(viewAngle)), sin(Radian(viewAngle)), 0 };
 
-	const float fovAngleSpd = 1;
+	if (walkType == false)
+	{
+		// バイオ歩き
+		BioWalk();
+	}
+	if (walkType == true)
+	{
+		// カメラ視点の前後左右歩き
+		DefaultWalk();
+	}
 
-	//if (input_->PushKey(DIK_UP))
-	//{
-	//	viewProjection.fovAngleY -= Radian(fovAngleSpd);
-	//	viewProjection.fovAngleY = max(viewProjection.fovAngleY, 0.01f);
-	//}
-	//if (input_->PushKey(DIK_DOWN))
-	//{
-	//	viewProjection.fovAngleY += Radian(fovAngleSpd);
-	//	viewProjection.fovAngleY = min(viewProjection.fovAngleY, MathUtility::PI);
-	//}
+	debugText_->SetPos(0, 0);
+	if (walkType == false)	debugText_->Printf("BioWalk");
+	if (walkType == true)	debugText_->Printf("Move of the camera viewport");
 
-	if (input_->PushKey(DIK_UP))	viewProjection.nearZ += 0.1f;
-	if (input_->PushKey(DIK_DOWN))	viewProjection.nearZ -= 0.1f;
-
-
-	// 行列の再計算
-	viewProjection.UpdateMatrix();
-
-	// デバッグ用表示
-	debugText_->SetPos(50, 50);
-	debugText_->Printf(
-		"eye:(%f,%f,%f)",
-		viewProjection.eye.x,
-		viewProjection.eye.y,
-		viewProjection.eye.z);
-
-	debugText_->SetPos(50, 70);
-	debugText_->Printf(
-		"target:(%f,%f,%f)",
-		viewProjection.target.x,
-		viewProjection.target.y,
-		viewProjection.target.z);
-
-	debugText_->SetPos(50, 90);
-	debugText_->Printf(
-		"up:(%f,%f,%f)",
-		viewProjection.up.x,
-		viewProjection.up.y,
-		viewProjection.up.z);
-
-	debugText_->SetPos(50, 110);
-	debugText_->Printf(
-		"fovAngleY(Degree):%f",
-		Angle((viewProjection.fovAngleY)));
 }
 
 void GameScene::Draw() {
@@ -183,11 +152,13 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	for (size_t i = 0; i < _countof(worldTransforms); i++)
-		model->Draw(worldTransforms[i], viewProjection, textureHandle);
-	//model->Draw(worldTransforms[i], debugCamera->GetViewProjection(), textureHandle);
+	model->Draw(worldTransform, debugCamera->GetViewProjection(), textureHandle);
 
-// 3Dオブジェクト描画後処理
+	for (size_t i = 0; i < _countof(worldTransform2); i++)
+		model->Draw(worldTransform2[i], debugCamera->GetViewProjection(), textureHandle);
+
+
+	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
 
@@ -208,4 +179,60 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::BioWalk()
+{
+	if (input_->PushKey(DIK_W)) {
+
+		objPos += objFrontVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_S)) {
+
+		objPos -= objFrontVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_A)) {
+		angle -= 2;
+		if (angle < 0)
+			angle = 360;
+	}
+	if (input_->PushKey(DIK_D)) {
+		angle += 2;
+		if (angle > 360)
+			angle = 0;
+	}
+
+	objFrontVec = { sin(Radian(angle)), 0.0f, cos(Radian(angle)) };
+	worldTransform.translation_ = { objPos.x, objPos.y, objPos.z };
+	worldTransform.rotation_ = { 0.0f, Radian(angle), 0.0f };
+
+	worldTransform.WorldTransformationMatrix();
+}
+void GameScene::DefaultWalk()
+{
+	objFrontVec = debugCamera->GetViewProjection().target - debugCamera->GetViewProjection().eye;
+	objRightVec = Vector3::Cross(Vector3(0, 1, 0), objFrontVec);
+	objFrontVec = objFrontVec.Normalized();
+	objRightVec = objRightVec.Normalized();
+
+	float speed = 0.1;
+	if (input_->PushKey(DIK_W))
+	{
+		objPos += objFrontVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_S))
+	{
+		objPos -= objFrontVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_D))
+	{
+		objPos += objRightVec * objSpeed;
+	}
+	if (input_->PushKey(DIK_A))
+	{
+		objPos -= objRightVec * objSpeed;
+	}
+
+	worldTransform.translation_ = { objPos.x, objPos.y, objPos.z };
+	worldTransform.WorldTransformationMatrix();
 }
