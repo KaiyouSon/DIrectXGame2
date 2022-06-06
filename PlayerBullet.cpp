@@ -41,11 +41,6 @@ void PlayerBullet::Update()
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();
 
-	DebugText* debug = DebugText::GetInstance();
-
-	debug->SetPos(0, 0);
-	debug->Printf("%f,%f,%f", pos.x, pos.y, pos.z);
-
 }
 
 void PlayerBullet::Draw()

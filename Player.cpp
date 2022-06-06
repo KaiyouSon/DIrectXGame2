@@ -4,14 +4,17 @@
 #include "Util.h"
 #include "ViewProjection.h"
 
-Player::Player() : pos(0, 0, 0),bullet(new PlayerBullet)
+Player::Player() :
+	pos(0, 0, 0),
+	maxBullet(20), bullet(new PlayerBullet[maxBullet]),
+	bulletIndex(0)
 {
 }
 
 Player::~Player()
 {
 	delete model;
-	delete bullet;
+	delete[] bullet;
 }
 
 void Player::Initialize()
@@ -24,8 +27,9 @@ void Player::Initialize()
 	trans.rotation_ = { 0,0,0 };
 	trans.Initialize();
 	trans.WorldTransformationMatrix();
-	
-	bullet->Initialize();
+
+	for (int i = 0; i < maxBullet; i++)
+		bullet[i].Initialize();
 }
 
 void Player::Update()
@@ -51,9 +55,17 @@ void Player::Update()
 	trans.WorldTransformationMatrix();
 
 	if (input->TriggerKey(DIK_SPACE))
-		bullet->Generate(pos);
+	{
+		bullet[bulletIndex].Generate(pos);
+		bulletIndex++;
+	}
+	if (bulletIndex > maxBullet)
+	{
+		bulletIndex = 0;
+	}
 
-	bullet->Update();
+	for (int i = 0; i < maxBullet; i++)
+		bullet[i].Update();
 
 	//debug->SetPos(0, 0);
 	//debug->Printf("%f,%f", pos.x, pos.y);
@@ -61,6 +73,8 @@ void Player::Update()
 
 void Player::Draw()
 {
-	bullet->Draw();
+	for (int i = 0; i < maxBullet; i++)
+		bullet[i].Draw();
+
 	model->Draw(trans, view, textureHandle);
 }

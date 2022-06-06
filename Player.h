@@ -11,6 +11,9 @@ private:
 	Model* model = nullptr;
 	WorldTransform trans;
 	Vector3 pos;
+
+	const int maxBullet;
+	int bulletIndex;
 	PlayerBullet* bullet;
 
 public:

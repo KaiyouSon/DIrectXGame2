@@ -25,41 +25,6 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	debugText_ = DebugText::GetInstance();
 
-	//// 乱数シート生成器
-	//std::random_device seed_gen;
-	//// メルセンヌ・ツイスターの乱数エンジン
-	//std::mt19937_64 engine(seed_gen());
-	//// 乱数範囲（回転角用）
-	//std::uniform_real_distribution<float> rotDist(0, 360);
-	//// 乱数範囲（座標用）
-	//std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-
-	// ワールドトランスフォームの初期化
-	//worldTransforms[0].Initialize();
-
-	//// モデルのスケーリング
-	//worldTransforms[0].scale_ = { 1,1,1 };
-	//// モデルの回転
-	//worldTransforms[0].rotation_ = { 0,0,0 };
-	//// モデルの平行移動
-	//worldTransforms[0].translation_ = { 0,0,0 };
-
-	//worldTransforms[0].WorldTransformationMatrix();
-
-	//// ワールドトランスフォームの初期化
-	//worldTransforms[1].Initialize();
-
-	//// モデルのスケーリング
-	//worldTransforms[1].scale_ = { 1,1,1 };
-	//// モデルの回転
-	//worldTransforms[1].rotation_ = { 0,0,0 };
-	//// モデルの平行移動
-	//worldTransforms[1].translation_ = { 5,0,0 };
-
-	//worldTransforms[1].WorldTransformationMatrix();
-
-	//worldTransforms[1].parent_ = &worldTransforms[0];
-
 	// カメラの視点指定
 	view.eye = { 0,0,-50 };
 	view.target = { 0,0,0 };
@@ -100,8 +65,8 @@ void GameScene::Update() {
 
 	view.TransferMatrix();
 
-	debugText_->SetPos(WIN_WIDTH - 100, 0);
-	debugText_->Printf("isDebug = %d", isDebug);
+	//debugText_->SetPos(WIN_WIDTH - 100, 0);
+	//debugText_->Printf("isDebug = %d", isDebug);
 }
 
 void GameScene::Draw() {
