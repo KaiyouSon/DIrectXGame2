@@ -84,7 +84,7 @@ void GameScene::Update() {
 
 	player->Update();
 
-#ifdef DEBUG
+
 	if (input_->TriggerKey(DIK_F5))
 	{
 		if (isDebug == false) isDebug = true;
@@ -97,7 +97,6 @@ void GameScene::Update() {
 		view.matProjection = debugCamera->GetViewProjection().matProjection;
 		view.TransferMatrix();
 	}
-#endif
 
 	view.TransferMatrix();
 
