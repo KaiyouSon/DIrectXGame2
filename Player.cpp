@@ -4,13 +4,14 @@
 #include "Util.h"
 #include "ViewProjection.h"
 
-Player::Player() : pos(0, 0, 0)
+Player::Player() : pos(0, 0, 0),bullet(new PlayerBullet)
 {
 }
 
 Player::~Player()
 {
 	delete model;
+	delete bullet;
 }
 
 void Player::Initialize()
@@ -18,12 +19,13 @@ void Player::Initialize()
 	textureHandle = TextureManager::Load("mario.jpg");
 	model = Model::Create();
 
-
 	trans.translation_ = pos;
 	trans.scale_ = { 1,1,1 };
 	trans.rotation_ = { 0,0,0 };
 	trans.Initialize();
 	trans.WorldTransformationMatrix();
+	
+	bullet->Initialize();
 }
 
 void Player::Update()
@@ -48,13 +50,17 @@ void Player::Update()
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();
 
+	if (input->TriggerKey(DIK_SPACE))
+		bullet->Generate(pos);
 
-	debug->SetPos(0, 0);
-	debug->Printf("%f,%f", pos.x, pos.y);
+	bullet->Update();
+
+	//debug->SetPos(0, 0);
+	//debug->Printf("%f,%f", pos.x, pos.y);
 }
 
 void Player::Draw()
 {
-	//model->Draw(worldTransforms, debugCamera->GetViewProjection(), textureHandle);
+	bullet->Draw();
 	model->Draw(trans, view, textureHandle);
 }

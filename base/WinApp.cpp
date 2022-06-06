@@ -1,5 +1,5 @@
 ﻿#include "WinApp.h"
-
+#include "Input.h"
 #include <string>
 
 namespace {
@@ -144,6 +144,12 @@ bool WinApp::ProcessMessage() {
 	}
 
 	if (msg.message == WM_QUIT) // 終了メッセージが来たらループを抜ける
+	{
+		return true;
+	}
+
+	Input* input = Input::GetInstance();
+	if (input->TriggerKey(DIK_ESCAPE))
 	{
 		return true;
 	}

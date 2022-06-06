@@ -3,20 +3,21 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Vector3.h"
-#include "PlayerBullet.h"
-class Player
+class PlayerBullet
 {
 private:
 	uint32_t textureHandle = 0;
 	Model* model = nullptr;
 	WorldTransform trans;
 	Vector3 pos;
-	PlayerBullet* bullet;
+	float speed;
+	bool isShot;
 
 public:
-	Player();
-	~Player();
+	PlayerBullet();
+	~PlayerBullet();
 	void Initialize();
+	void Generate(const Vector3& pos);
 	void Update();
 	void Draw();
 };
