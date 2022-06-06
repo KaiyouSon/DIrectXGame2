@@ -13,8 +13,11 @@ private:
 	Vector3 pos;
 
 	const int maxBullet;
-	int bulletIndex;
 	PlayerBullet* bullet;
+	int shotTimer;
+	int maxShotTimer;
+	Vector3 frontVec;
+	float rotAngle;
 
 public:
 	Player();

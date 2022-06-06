@@ -10,6 +10,8 @@ private:
 	Model* model = nullptr;
 	WorldTransform trans;
 	Vector3 pos;
+	Vector3 vec;
+	int aliveTimer;
 	float speed;
 	bool isShot;
 
@@ -17,8 +19,10 @@ public:
 	PlayerBullet();
 	~PlayerBullet();
 	void Initialize();
-	void Generate(const Vector3& pos);
+	void Generate(const Vector3& pos, const Vector3& vec);
 	void Update();
 	void Draw();
+
+	bool GetisShot();
 };
 

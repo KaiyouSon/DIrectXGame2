@@ -3,7 +3,9 @@
 #include "Util.h"
 #include "ViewProjection.h"
 
-PlayerBullet::PlayerBullet() : pos(0, 0, 0), speed(2), isShot(false)
+PlayerBullet::PlayerBullet() :
+	pos(0, 0, 0), vec(0, 0, 0),
+	speed(2), isShot(false), aliveTimer(0)
 {
 }
 
@@ -25,19 +27,24 @@ void PlayerBullet::Initialize()
 	isShot = false;
 }
 
-void PlayerBullet::Generate(const Vector3& pos)
+void PlayerBullet::Generate(const Vector3& pos, const Vector3& vec)
 {
 	this->pos = pos;
+	this->vec = vec;
 	isShot = true;
 }
 
 void PlayerBullet::Update()
 {
 	if (isShot == false) return;
-	pos.z += speed;
+	pos += vec * speed;
 
-	if (pos.z >= 200) isShot = false;
-
+	aliveTimer++;
+	if (aliveTimer >= 350)
+	{
+		isShot = false;
+		aliveTimer = 0;
+	}
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();
 
@@ -47,4 +54,9 @@ void PlayerBullet::Draw()
 {
 	if (isShot == false) return;
 	model->Draw(trans, view, textureHandle);
+}
+
+bool PlayerBullet::GetisShot()
+{
+	return isShot;
 }
