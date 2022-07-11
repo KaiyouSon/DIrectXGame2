@@ -51,21 +51,6 @@ void Enemy::Draw()
 	model->Draw(trans, view, textureHandle);
 }
 
-void (Enemy::* Enemy::spFuncTable[])() =
-{
-	&ApproachUpdate,
-	&LeaveUpdate,
-};
-void Enemy::ApproachUpdate()
-{
-	pos.z -= speed;
-	if (pos.z <= 0) phase = Phase::Leave;
-}
-void Enemy::LeaveUpdate()
-{
-
-}
-
 void Enemy::SetPos(Vector3 pos)
 {
 	this->pos = pos;

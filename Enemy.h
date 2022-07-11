@@ -22,14 +22,8 @@ private:
 	float speed;
 	Phase phase = Phase::Approach;
 
+	// ó‘Ô
 	BaseEnemyState* currentState;
-
-	void ApproachUpdate();
-	void LeaveUpdate();
-
-	// ŠÖ”ƒe[ƒuƒ‹
-	static void (Enemy::* spFuncTable[])();
-
 public:
 	Enemy();
 	~Enemy();
