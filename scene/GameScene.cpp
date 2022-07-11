@@ -8,14 +8,17 @@
 #include <random>
 #include "Util.h"
 #include "Player.h"
+#include "Enemy.h"
 
 Player* player = new Player;
+Enemy* enemy = new Enemy;
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete debugCamera;
 	delete player;
+	delete enemy;
 }
 
 void GameScene::Initialize() {
@@ -43,11 +46,13 @@ void GameScene::Initialize() {
 	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera->GetViewProjection());
 
 	player->Initialize();
+	enemy->Initialize();
 }
 
 void GameScene::Update() {
 
 	player->Update();
+	enemy->Update();
 
 	if (input_->TriggerKey(DIK_F5))
 	{
@@ -96,6 +101,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	player->Draw();
+	enemy->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
