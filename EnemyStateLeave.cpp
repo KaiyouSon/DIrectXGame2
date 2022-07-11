@@ -21,9 +21,9 @@ void EnemyStateLeave::Update()
 	pos.y += speed;
 	enemy->SetPos(pos);
 
-	if (pos.x <= -35 || pos.y >= 20)
+	if (pos.x <= -35 || pos.y >= 25)
 	{
-		pos = { 0,0,30 };
+		pos = enemy->GetGeneratePos();
 		enemy->SetPos(pos);
 		isEnd = true;
 	}

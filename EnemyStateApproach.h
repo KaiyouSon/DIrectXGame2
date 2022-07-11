@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseEnemyState.h"
 #include "Vector3.h"
+
 class EnemyStateApproach : public BaseEnemyState
 {
 private:
