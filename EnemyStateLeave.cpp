@@ -7,6 +7,7 @@ extern Enemy* enemy;
 EnemyStateLeave::EnemyStateLeave() :
 	speed(0.25)
 {
+	tag = "Leave";
 }
 
 void EnemyStateLeave::Initialize()

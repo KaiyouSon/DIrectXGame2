@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <list>
+#include <memory>
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Vector3.h"
@@ -23,10 +25,17 @@ private:
 	Vector3 pos;
 	float speed;
 	Phase phase = Phase::Approach;
-	EnemyBullet* enemyBullet;
+
+	std::list<std::unique_ptr<EnemyBullet>> enemyBullets;
+	float generateTimer;
+	float maxGenerateTimer;
 
 	// èÛë‘
 	BaseEnemyState* currentState;
+
+	void ShotUpdate();
+	void StateChangeUpdate();
+
 public:
 	Enemy();
 	~Enemy();

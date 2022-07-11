@@ -7,6 +7,7 @@ extern Enemy* enemy;
 EnemyStateApproach::EnemyStateApproach() :
 	speed(0.25)
 {
+	tag = "Approach";
 }
 
 void EnemyStateApproach::Initialize()

@@ -33,6 +33,8 @@ void EnemyBullet::Generate(const Vector3& pos)
 
 void EnemyBullet::Update()
 {
+	if (isActive == false) return;
+
 	pos.z -= speed;
 
 	trans.translation_ = pos;
@@ -44,5 +46,7 @@ void EnemyBullet::Update()
 
 void EnemyBullet::Draw()
 {
+	if (isActive == false) return;
+
 	model->Draw(trans, view, textureHandle);
 }

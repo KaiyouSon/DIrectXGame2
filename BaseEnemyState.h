@@ -1,8 +1,11 @@
 #pragma once
+#include <string>
+
 class BaseEnemyState
 {
 protected:
 	bool isEnd;
+	std::string tag;
 public:
 	virtual ~BaseEnemyState() {}
 	virtual void Initialize() = 0;
@@ -10,5 +13,6 @@ public:
 	virtual BaseEnemyState* NextState() = 0;
 
 	bool GetisEnd() { return isEnd; }
+	std::string GetTag() { return tag; }
 };
 
