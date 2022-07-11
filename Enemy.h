@@ -23,6 +23,9 @@ private:
 	void ApproachUpdate();
 	void LeaveUpdate();
 
+	// ŠÖ”ƒe[ƒuƒ‹
+	static void (Enemy::* spFuncTable[])();
+
 public:
 	Enemy();
 	~Enemy();

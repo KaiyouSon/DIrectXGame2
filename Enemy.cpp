@@ -24,20 +24,12 @@ void Enemy::Initialize()
 	trans.WorldTransformationMatrix();
 }
 
+
+
 void Enemy::Update()
 {
-	switch (phase)
-	{
-	case Phase::Approach:
+	(this->*spFuncTable[static_cast<size_t> (phase)])();
 
-		ApproachUpdate();
-		break;
-
-	case Phase::Leave:
-
-		LeaveUpdate();
-		break;
-	}
 
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();
@@ -48,12 +40,16 @@ void Enemy::Draw()
 	model->Draw(trans, view, textureHandle);
 }
 
+void (Enemy::* Enemy::spFuncTable[])() =
+{
+	&ApproachUpdate,
+	&LeaveUpdate,
+};
 void Enemy::ApproachUpdate()
 {
 	pos.z -= speed;
 	if (pos.z <= 0) phase = Phase::Leave;
 }
-
 void Enemy::LeaveUpdate()
 {
 	pos.x -= speed;
