@@ -3,6 +3,8 @@
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Vector3.h"
+#include "BaseEnemyState.h"
+
 class Enemy
 {
 public:
@@ -20,6 +22,8 @@ private:
 	float speed;
 	Phase phase = Phase::Approach;
 
+	BaseEnemyState* currentState;
+
 	void ApproachUpdate();
 	void LeaveUpdate();
 
@@ -33,5 +37,6 @@ public:
 	void Update();
 	void Draw();
 
-
+	void SetPos(Vector3 pos);
+	Vector3 GetPos();
 };
