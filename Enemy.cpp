@@ -2,7 +2,7 @@
 #include "Util.h"
 
 Enemy::Enemy() :
-	pos(0, 0, 0)
+	pos(0, 0, 30), speed(0.25)
 {
 
 }
@@ -26,8 +26,19 @@ void Enemy::Initialize()
 
 void Enemy::Update()
 {
-	pos.z -= 0.25;
-	if (pos.z <= view.eye.z) pos.z = 30;
+	switch (phase)
+	{
+	case Phase::Approach:
+
+		ApproachUpdate();
+		break;
+
+	case Phase::Leave:
+
+		LeaveUpdate();
+		break;
+	}
+
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();
 }
@@ -35,4 +46,22 @@ void Enemy::Update()
 void Enemy::Draw()
 {
 	model->Draw(trans, view, textureHandle);
+}
+
+void Enemy::ApproachUpdate()
+{
+	pos.z -= speed;
+	if (pos.z <= 0) phase = Phase::Leave;
+}
+
+void Enemy::LeaveUpdate()
+{
+	pos.x -= speed;
+	pos.y += speed;
+
+	if (pos.x <= -35 || pos.y >= 20)
+	{
+		pos = { 0,0,30 };
+		phase = Phase::Approach;
+	}
 }
