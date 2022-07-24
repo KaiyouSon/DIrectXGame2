@@ -1,5 +1,7 @@
 #include "EnemyBullet.h"
+#include "Player.h"
 #include "Util.h"
+extern Player* player;
 
 EnemyBullet::EnemyBullet() :
 	pos(0, 0, 0), speed(1),
@@ -29,13 +31,14 @@ void EnemyBullet::Generate(const Vector3& pos)
 	this->pos = pos;
 	activeTimer = 0;
 	isActive = true;
+	vec = player->GetPos() - pos;
 }
 
 void EnemyBullet::Update()
 {
 	if (isActive == false) return;
 
-	pos.z -= speed;
+	pos += vec.Normalized() * speed;
 
 	trans.translation_ = pos;
 	trans.WorldTransformationMatrix();

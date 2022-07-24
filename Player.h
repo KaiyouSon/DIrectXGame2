@@ -25,5 +25,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+
+	Vector3 GetPos() { return pos; }
 };
 
