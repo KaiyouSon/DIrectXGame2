@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <list>
 #include <memory>
+#include "TimedCall.h"
 #include "Model.h"
 #include "WorldTransform.h"
 #include "Vector3.h"
@@ -30,9 +31,12 @@ private:
 	float generateTimer;
 	float maxGenerateTimer;
 
+	std::list<std::unique_ptr<TimedCall>> timedCalls;
+
 	// èÛë‘
 	BaseEnemyState* currentState;
 
+	void Fire();
 	void ShotUpdate();
 	void StateChangeUpdate();
 
@@ -42,7 +46,6 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
-
 	void SetPos(Vector3 pos);
 	Vector3 GetGeneratePos();
 	Vector3 GetPos();

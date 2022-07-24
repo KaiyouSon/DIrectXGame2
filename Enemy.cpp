@@ -3,11 +3,12 @@
 #include "EnemyStateApproach.h"
 #include "EnemyStateLeave.h"
 #include "DebugText.h"
+using namespace std;
 
 Enemy::Enemy() :
 	generatePos(15, 0, 30), pos(generatePos),
 	speed(0.25), currentState(new EnemyStateApproach),
-	generateTimer(0), maxGenerateTimer(60)
+	generateTimer(0), maxGenerateTimer(30)
 {
 }
 Enemy::~Enemy()
@@ -69,6 +70,15 @@ Vector3 Enemy::GetPos()
 	return pos;
 }
 
+void Enemy::Fire()
+{
+	unique_ptr <EnemyBullet> newBullet = make_unique<EnemyBullet>();
+	newBullet->Initialize();
+	if (newBullet->GetisActive() == false)
+		newBullet->Generate(pos);
+	enemyBullets.push_back(move(newBullet));
+}
+
 void Enemy::ShotUpdate()
 {
 	if (currentState->GetTag() == "Approach")
@@ -76,17 +86,33 @@ void Enemy::ShotUpdate()
 		generateTimer++;
 		if (generateTimer >= maxGenerateTimer)
 		{
-			std::unique_ptr <EnemyBullet> newBullet = std::make_unique<EnemyBullet>();
-			newBullet->Initialize();
-			if (newBullet->GetisActive() == false)
-				newBullet->Generate(pos);
-			enemyBullets.push_back(std::move(newBullet));
+			// メンバー関数と呼び出し元をbindしてstd::functionに代入
+			function<void(void)> callback = bind(&Enemy::Fire, this);
+
+			// 時限発動イベントを生成
+			unique_ptr<TimedCall> timedCall = make_unique<TimedCall>(callback, 60);
+
+			// 時限発動イベントを時限発動イベントリストに追加
+			timedCalls.push_back(move(timedCall));
+
 			generateTimer = 0;
 		}
-	}
-	else generateTimer = 0;
 
-	for (std::unique_ptr <EnemyBullet>& enemyBullet : enemyBullets)
+		timedCalls.remove_if([](unique_ptr<TimedCall>& tempTimedCall) {	return tempTimedCall->GetisEnd(); });
+		// タイマーの処理
+		for (unique_ptr<TimedCall>& timedCall : timedCalls)
+		{
+			timedCall->Update();
+		}
+	}
+	else
+	{
+		generateTimer = 0;
+		timedCalls.clear();
+	}
+
+	// 弾の移動処理
+	for (unique_ptr <EnemyBullet>& enemyBullet : enemyBullets)
 	{
 		enemyBullet->Update();
 	}
