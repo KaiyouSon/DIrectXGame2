@@ -10,6 +10,7 @@ private:
 	Model* model = nullptr;
 	WorldTransform trans;
 	Vector3 pos;
+	Vector3 rot;
 	Vector3 vec;
 	float speed;
 	float activeTimer;

@@ -1,10 +1,12 @@
 #include "EnemyBullet.h"
 #include "Player.h"
+#include "MathUtil.h"
 #include "Util.h"
+#include <iostream>
 extern Player* player;
 
 EnemyBullet::EnemyBullet() :
-	pos(0, 0, 0), speed(1),
+	pos(0, 0, 0), rot(0, 0, 0), speed(1),
 	maxActiveTimer(120), activeTimer(0), isActive(false)
 {
 }
@@ -20,7 +22,7 @@ void EnemyBullet::Initialize()
 	model = Model::Create();
 
 	trans.translation_ = pos;
-	trans.scale_ = { 1,1,1 };
+	trans.scale_ = { 0.5f,0.5f,3.0f };
 	trans.rotation_ = { 0,0,0 };
 	trans.Initialize();
 	trans.WorldTransformationMatrix();
@@ -40,7 +42,9 @@ void EnemyBullet::Update()
 
 	pos += vec.Normalized() * speed;
 
+	rot.y = atan2(vec.z, vec.x);
 	trans.translation_ = pos;
+	trans.rotation_ = rot;
 	trans.WorldTransformationMatrix();
 
 	activeTimer++;
