@@ -3,6 +3,7 @@
 #include "EnemyStateApproach.h"
 #include "EnemyStateLeave.h"
 #include "DebugText.h"
+#include "PrimitiveDrawer.h"
 using namespace std;
 
 Enemy::Enemy() :
@@ -47,13 +48,15 @@ void Enemy::Update()
 	//debug->SetPos(0, 0);
 	//debug->Printf("generateTimer = %f", generateTimer);
 }
+
 void Enemy::Draw()
 {
+	model->Draw(trans, view, textureHandle);
 	for (std::unique_ptr <EnemyBullet>& enemyBullet : enemyBullets)
 	{
 		enemyBullet->Draw();
 	}
-	model->Draw(trans, view, textureHandle);
+
 }
 
 void Enemy::SetPos(Vector3 pos)
@@ -90,7 +93,7 @@ void Enemy::ShotUpdate()
 			function<void(void)> callback = bind(&Enemy::Fire, this);
 
 			// 時限発動イベントを生成
-			unique_ptr<TimedCall> timedCall = make_unique<TimedCall>(callback, 60);
+			unique_ptr<TimedCall> timedCall = make_unique<TimedCall>(callback, maxGenerateTimer);
 
 			// 時限発動イベントを時限発動イベントリストに追加
 			timedCalls.push_back(move(timedCall));

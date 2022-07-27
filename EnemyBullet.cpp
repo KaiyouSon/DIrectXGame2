@@ -32,20 +32,25 @@ void EnemyBullet::Generate(const Vector3& pos)
 {
 	this->pos = pos;
 	activeTimer = 0;
-	isActive = true;
 	vec = player->GetPos() - pos;
-}
 
+
+	//rot.x = Radian(45);
+	rot.y = atan2(-vec.x, -vec.z);
+	rot.x = atan2(vec.y, -vec.z);
+	trans.rotation_ = rot;
+	trans.WorldTransformationMatrix();
+
+	isActive = true;
+}
 void EnemyBullet::Update()
 {
 	if (isActive == false) return;
 
 	pos += vec.Normalized() * speed;
-
-	rot.y = atan2(vec.z, vec.x);
 	trans.translation_ = pos;
-	trans.rotation_ = rot;
 	trans.WorldTransformationMatrix();
+
 
 	activeTimer++;
 	if (activeTimer >= maxActiveTimer) isActive = false;

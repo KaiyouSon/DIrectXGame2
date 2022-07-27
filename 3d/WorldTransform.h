@@ -46,12 +46,14 @@ struct WorldTransform {
 	/// </summary>
 	void TransferMatrix();
 
+	Matrix4 matRot;
 	void WorldTransformationMatrix()
 	{
 		// スケーリング行列を宣言
 		Matrix4 matScale = MathUtility::Matrix4Scaling(scale_.x, scale_.y, scale_.z);
 
 		// 回転行列を宣言
+		matRot = MathUtility::Matrix4Identity();
 		Matrix4 matRotZ = MathUtility::Matrix4RotationZ(rotation_.z);
 		Matrix4 matRotX = MathUtility::Matrix4RotationX(rotation_.x);
 		Matrix4 matRotY = MathUtility::Matrix4RotationY(rotation_.y);

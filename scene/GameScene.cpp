@@ -30,6 +30,7 @@ void GameScene::Initialize() {
 
 	// カメラの視点指定
 	view.eye = { 0,0,-50 };
+	//view.eye = { 0,50,-5 };
 	view.target = { 0,0,0 };
 	view.up = { 0, 1, 0 };
 	view.Initialize();
@@ -43,7 +44,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&view);
 
 	// ライン描画が参照参照するビュープロジェクションを指定する(アドレス渡し)
-	PrimitiveDrawer::GetInstance()->SetViewProjection(&debugCamera->GetViewProjection());
+	PrimitiveDrawer::GetInstance()->SetViewProjection(&view);
 
 	player->Initialize();
 	enemy->Initialize();

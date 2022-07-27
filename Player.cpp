@@ -89,11 +89,6 @@ void Player::Update()
 
 	for (int i = 0; i < maxBullet; i++)
 		bullet[i].Update();
-
-
-
-	//debug->SetPos(0, 0);
-	//debug->Printf("%f,%f", pos.x, pos.y);
 }
 
 void Player::Draw()

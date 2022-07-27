@@ -26,5 +26,8 @@ public:
 	void Draw();
 
 	bool GetisActive() { return isActive; }
+
+	Vector3 GetPos() { return pos; }
+	Vector3 GetVec() { return vec; }
 };
 
