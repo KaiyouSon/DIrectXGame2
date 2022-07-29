@@ -39,6 +39,12 @@ public:
 	{
 		return { x * other.x , y * other.y ,z * other.z };
 	}
+
+	Vector3 operator/(const Vector3& other) const
+	{
+		return { x / other.x , y / other.y ,z / other.z };
+	}
+
 	Vector3 operator*(const float& num) const
 	{
 		return { x * num,y * num,z * num };
@@ -53,5 +59,10 @@ public:
 		(v1.y * v2.z - v1.z * v2.y),
 		(v1.z * v2.x - v1.x * v2.z),
 		(v1.x * v2.y - v1.y * v2.x) };
+	}
+
+	static Vector3 Lerp(const Vector3& v1, const Vector3& v2, float t)
+	{
+		return { v1 + (v2 - v1) * t };
 	}
 };

@@ -50,6 +50,11 @@ void GameScene::Initialize() {
 	enemy->Initialize();
 }
 
+//Vector3 a = { 0,0,0 };
+//Vector3 b = { 100,50,200 };
+//Vector3 p;
+//float timer = 0;
+
 void GameScene::Update() {
 
 	player->Update();
@@ -69,6 +74,14 @@ void GameScene::Update() {
 	}
 
 	view.TransferMatrix();
+
+	//timer += 0.01;
+	//if (timer >= 1) timer = 1;
+
+	//p = Vector3::Lerp(a, b, timer);
+
+	//debugText_->SetPos(20, 20);
+	//debugText_->Printf("p = (%f, %f, %f)", p.x, p.y, p.z);
 
 	//debugText_->SetPos(WIN_WIDTH - 100, 0);
 	//debugText_->Printf("isDebug = %d", isDebug);

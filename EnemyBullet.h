@@ -17,6 +17,9 @@ private:
 	float maxActiveTimer;
 	bool isActive;
 
+	Vector3 spos;
+	float timer;
+
 public:
 	EnemyBullet();
 	~EnemyBullet();

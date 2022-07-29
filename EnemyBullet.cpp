@@ -7,7 +7,8 @@ extern Player* player;
 
 EnemyBullet::EnemyBullet() :
 	pos(0, 0, 0), rot(0, 0, 0), speed(1),
-	maxActiveTimer(120), activeTimer(0), isActive(false)
+	maxActiveTimer(120), activeTimer(0), isActive(false),
+	spos(0, 0, 0), timer(0)
 {
 }
 
@@ -31,8 +32,9 @@ void EnemyBullet::Initialize()
 void EnemyBullet::Generate(const Vector3& pos)
 {
 	this->pos = pos;
+	spos = pos;
 	activeTimer = 0;
-	vec = player->GetPos() - pos;
+
 
 
 	//rot.x = Radian(45);
@@ -43,14 +45,21 @@ void EnemyBullet::Generate(const Vector3& pos)
 
 	isActive = true;
 }
+
+static float t = 0;
 void EnemyBullet::Update()
 {
 	if (isActive == false) return;
 
+	vec = player->GetPos() - pos;
 	pos += vec.Normalized() * speed;
-	trans.translation_ = pos;
-	trans.WorldTransformationMatrix();
 
+	rot.y = atan2(-vec.x, -vec.z);
+	rot.x = atan2(vec.y, -vec.z);
+
+	trans.translation_ = pos;
+	trans.rotation_ = rot;
+	trans.WorldTransformationMatrix();
 
 	activeTimer++;
 	if (activeTimer >= maxActiveTimer) isActive = false;
